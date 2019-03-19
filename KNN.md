@@ -86,3 +86,10 @@
 
 数据的归一化处理就是把数据的取值范围处理为0到1或者-1到1之间  
 公式 : newValue = (oldValue - min) / (max - min) `这里的min和max指代的是每列数据的min值和max值`
+
+      def autoNorm(D):
+          minv = D.min(0)
+          maxv = D.max(0)
+          n = D.shape[0]
+          newValue = (D - np.tile(minv,(n,1))) / (np.tile(maxv - minv,(n,1)))
+          return newValue
