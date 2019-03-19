@@ -8,8 +8,9 @@
         minv = D.min(0)
         maxv = D.max(0)
         n = D.shape[0]
-        newValue = (D - np.tile(minv, (n, 1))) / (np.tile(maxv - minv, (n, 1)))
-        return newValue
+        ranges = maxv - minv
+        newValue = (D - np.tile(minv, (n, 1))) / (np.tile(ranges, (n, 1)))
+        return newValue, minv, ranges
 
 
     def KNN(Inx, D, L, k):
@@ -32,11 +33,9 @@
         line = list(map(float, line.rstrip('\n').split('\t')))
         DataSet.append(line[:3])
         LabelSet.append(int(line[3]))
-    DataSet = autoNorm(np.array(DataSet))
-    TestDataSet = DataSet[:100];
-    TestLabelSet = LabelSet[:100]
-    Data = DataSet[100:];
-    Label = LabelSet[100:]
+    DataSet, minv, ranges = autoNorm(np.array(DataSet))
+    TestDataSet = DataSet[:100];TestLabelSet = LabelSet[:100];Data = DataSet[:];Label = LabelSet[:]
+    # 使用数据集的一部分进行测试KNN算法的错误率
     falseTotal = 0
     for i in range(len(TestDataSet)):
         preRes = KNN(np.array(TestDataSet[i]), np.array(Data), np.array(Label), 5)
@@ -44,6 +43,13 @@
             falseTotal += 1
         print('the classifier came back with: {:d}, thr real answer is: {:d}'.format(preRes, TestLabelSet[i]))
     print('the total error rate is: {:.5f}'.format(falseTotal / len(TestDataSet)))
+    # 通过输入数据来测试海伦对对方的喜欢程度
+    res = ['not at all', 'in small doses', 'in large deses']
+    percentTats = float(input('percentage of time spent playing video games?'))
+    ffMiles = float(input('frequent flier miles earned per year?'))
+    iceCream = float(input('liters of ice cream consumed per year?'))
+    InArr = np.array([ffMiles, percentTats, iceCream])
+    print('You will probably like this persion:',res[KNN((InArr - minv) / ranges, np.array(Data), np.array(Label), 10)])
 
 
 # 约会网站散点图代码
