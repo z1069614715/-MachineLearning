@@ -3,12 +3,14 @@
     import os
     import numpy as np
 
+
     def autoNorm(D):
         minv = D.min(0)
         maxv = D.max(0)
         n = D.shape[0]
-        newValue = (D - np.tile(minv,(n,1))) / (np.tile(maxv - minv,(n,1)))
+        newValue = (D - np.tile(minv, (n, 1))) / (np.tile(maxv - minv, (n, 1)))
         return newValue
+
 
     def KNN(Inx, D, L, k):
         [m, n] = D.shape
@@ -21,19 +23,28 @@
         res = sorted(LabelCount.items(), key=lambda x: x[1], reverse=True)
         return res[0][0]
 
+
     path = os.getcwd() + '\\datingTestSet2.txt'
     f = open(path)
     DataSet = []
     LabelSet = []
     for line in f.readlines():
-        line = list(map(float,line.rstrip('\n').split('\t')))
+        line = list(map(float, line.rstrip('\n').split('\t')))
         DataSet.append(line[:3])
         LabelSet.append(int(line[3]))
     DataSet = autoNorm(np.array(DataSet))
-    TestDataSet = DataSet[:100];TestLabelSet = LabelSet[:100]
-    Data = DataSet[100:];Label = LabelSet[100:]
+    TestDataSet = DataSet[:100];
+    TestLabelSet = LabelSet[:100]
+    Data = DataSet[100:];
+    Label = LabelSet[100:]
+    falseTotal = 0
     for i in range(len(TestDataSet)):
-        print(KNN(np.array(TestDataSet[i]), np.array(Data), np.array(Label), 10) == TestLabelSet[i])
+        preRes = KNN(np.array(TestDataSet[i]), np.array(Data), np.array(Label), 5)
+        if preRes != TestLabelSet[i]:
+            falseTotal += 1
+        print('the classifier came back with: {:d}, thr real answer is: {:d}'.format(preRes, TestLabelSet[i]))
+    print('the total error rate is: {:.5f}'.format(falseTotal / len(TestDataSet)))
+
 
 # 约会网站散点图代码
 
