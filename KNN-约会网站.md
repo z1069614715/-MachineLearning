@@ -3,6 +3,12 @@
     import os
     import numpy as np
 
+    def autoNorm(D):
+        minv = D.min(0)
+        maxv = D.max(0)
+        n = D.shape[0]
+        newValue = (D - np.tile(minv,(n,1))) / (np.tile(maxv - minv,(n,1)))
+        return newValue
 
     def KNN(Inx, D, L, k):
         [m, n] = D.shape
@@ -17,16 +23,15 @@
 
     path = os.getcwd() + '\\datingTestSet2.txt'
     f = open(path)
-    DataSet = f.readlines()
-    TestDataSet = [];TestLabelSet = []
-    # 取出前面5个数据进行测试
-    for i in DataSet[:5]:
-        TestDataSet.append(list(map(float, i.rstrip('\n').split('\t')[:3])))
-        TestLabelSet.append(i.rstrip('\n').split('\t')[3])
-    Data = [];Label = []
-    for i in DataSet[5:]:
-        Data.append(list(map(float, i.rstrip('\n').split('\t')[:3])))
-        Label.append(i.rstrip('\n').split('\t')[3])
+    DataSet = []
+    LabelSet = []
+    for line in f.readlines():
+        line = list(map(float,line.rstrip('\n').split('\t')))
+        DataSet.append(line[:3])
+        LabelSet.append(int(line[3]))
+    DataSet = autoNorm(np.array(DataSet))
+    TestDataSet = DataSet[:100];TestLabelSet = LabelSet[:100]
+    Data = DataSet[100:];Label = LabelSet[100:]
     for i in range(len(TestDataSet)):
         print(KNN(np.array(TestDataSet[i]), np.array(Data), np.array(Label), 10) == TestLabelSet[i])
 
