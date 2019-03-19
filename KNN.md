@@ -81,3 +81,8 @@
           Data.append(line[:3])
           Label.append(line[3])
       print(KNNSolve(InX,np.array(Data).astype(dtype=float),np.array(Label),50))
+
+**数据的归一化处理**
+
+数据的归一化处理就是把数据的取值范围处理为0到1或者-1到1之间  
+公式 : newValue = (oldValue - min) / (max - min) `这里的min和max指代的是每列数据的min值和max值`
